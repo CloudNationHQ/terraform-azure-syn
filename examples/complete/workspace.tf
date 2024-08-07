@@ -1,14 +1,14 @@
 locals {
   workspace = {
-    name                             = "complete-synapse-example"
-    storage_account_id               = module.storage.account.id
-    location                         = module.rg.groups.demo.location
-    resourcegroup                    = module.rg.groups.demo.name
-    sql_administrator_login          = "sqladminuser"
-    sql_administrator_login_password = module.kv.secrets.synapse-admin-password.value
-    compute_subnet_id                = module.network.subnets.sn1.id
-    managed_resource_group_name      = "${module.rg.groups.demo.name}-synapse-resources"
-    managed_virtual_network_enabled  = true
+    name                                 = module.naming.synapse_workspace.name
+    storage_data_lake_gen2_filesystem_id = module.storage.file_systems.adls-gen2.id
+    location                             = module.rg.groups.syn.location
+    resource_group                       = module.rg.groups.syn.name
+    sql_administrator_login              = "sqladminuser"
+    sql_administrator_login_password     = module.kv.secrets.synapse-admin-password.value
+    compute_subnet_id                    = module.network.subnets.sn1.id
+    managed_resource_group_name          = "${module.rg.groups.syn.name}-synapse-resources"
+    managed_virtual_network_enabled      = true
 
     identity = {
       type = "SystemAssigned, UserAssigned"
@@ -40,7 +40,7 @@ locals {
 
     sql_pool = {
       pool1 = {
-        name           = "pool1"
+        name           = module.naming.synapse_sql_pool.name
         sku_name       = "DW100c"
         data_encrypted = true
       }
@@ -48,7 +48,7 @@ locals {
 
     spark_pool = {
       pool1 = {
-        name                                = "pool1"
+        name                                = module.naming.synapse_spark_pool.name
         node_size_family                    = "MemoryOptimized"
         node_size                           = "Small"
         dynamic_executor_allocation_enabled = true
@@ -68,19 +68,19 @@ locals {
 
     integration_runtime_azure = {
       ira1 = {
-        name = "azure-hosted-ir"
+        name = module.naming.synapse_integration_runtime_azure.name
       }
     }
 
     integration_runtime_self_hosted = {
       irs1 = {
-        name = "self-hosted-ir"
+        name = module.naming.synapse_integration_runtime_self_hosted.name
       }
     }
 
     linked_service = {
       ls1 = {
-        name                 = "ls1"
+        name                 = module.naming.synapse_linked_service.name
         type                 = "AzureBlobStorage"
         type_properties_json = <<JSON
 {
@@ -88,7 +88,7 @@ locals {
 }
 JSON
         integration_runtime = {
-          name = "azure-hosted-ir"
+          name = "synira-syn-complete"
         }
       }
     }

@@ -1,5 +1,9 @@
 This example highlights the complete usage.
 
+## Remark
+
+This example uses a data block to grab the public IP that is used run the terraform apply. This is needed for the linked_service to be created. Do not use this in a customer environment, it is solely to provide a working example.
+
 ## Usage
 
 ```hcl
@@ -12,8 +16,8 @@ module "synapse" {
   workspace = {
     name                             = "complete-synapse-example"
     storage_account_id               = module.storage.account.id
-    location                         = module.rg.groups.demo.location
-    resourcegroup                    = module.rg.groups.demo.name
+    location                         = module.rg.groups.syn.location
+    resource_group                    = module.rg.groups.syn.name
     sql_administrator_login          = "sqladminuser"
     sql_administrator_login_password = module.kv.secrets.synapse-admin-password.value
     compute_subnet_id                = module.network.subnets.sn1.id

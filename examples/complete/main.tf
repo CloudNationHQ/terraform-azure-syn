@@ -2,7 +2,7 @@ module "naming" {
   source  = "cloudnationhq/naming/azure"
   version = "~> 0.1"
 
-  suffix = ["jp", "dev"]
+  suffix = ["syn", "complete"]
 }
 
 module "rg" {
@@ -10,7 +10,7 @@ module "rg" {
   version = "~> 0.1"
 
   groups = {
-    demo = {
+    syn = {
       name   = module.naming.resource_group.name
       region = "westeurope"
     }
@@ -19,15 +19,21 @@ module "rg" {
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 0.1"
+  version = "~> 1.0"
 
   naming = local.naming
 
   storage = {
     name              = module.naming.storage_account.name_unique
-    location          = module.rg.groups.demo.location
-    resourcegroup     = module.rg.groups.demo.name
+    location          = module.rg.groups.syn.location
+    resource_group    = module.rg.groups.syn.name
     threat_protection = true
+    is_hns_enabled    = true
+    file_systems = {
+      adls-gen2 = {
+        name = module.naming.storage_data_lake_gen2_filesystem.name
+      }
+    }
   }
 }
 
@@ -47,8 +53,8 @@ module "network" {
 
   vnet = {
     name          = module.naming.virtual_network.name
-    location      = module.rg.groups.demo.location
-    resourcegroup = module.rg.groups.demo.name
+    location      = module.rg.groups.syn.location
+    resourcegroup = module.rg.groups.syn.name
     cidr          = ["10.0.0.0/16"]
     subnets = {
       sn1 = {
@@ -61,7 +67,8 @@ module "network" {
 
 
 module "synapse" {
-  source = "../../"
+  source  = "cloudnationhq/syn/azure"
+  version = "~> 0.1"
 
   naming    = local.naming
   workspace = local.workspace

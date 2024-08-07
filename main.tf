@@ -1,16 +1,11 @@
 data "azurerm_client_config" "current" {}
 
-# Moet naar SA
-resource "azurerm_storage_data_lake_gen2_filesystem" "sadlgen2" {
-  name               = "dlgen2-${var.workspace.name}"
-  storage_account_id = var.workspace.storage_account_id
-}
-
+# synapse workspace
 resource "azurerm_synapse_workspace" "synapse_workspace" {
   name                                 = var.workspace.name
-  resource_group_name                  = try(var.workspace.resourcegroup, var.resourcegroup)
+  resource_group_name                  = try(var.workspace.resource_group, var.resource_group)
   location                             = try(var.workspace.location, var.location)
-  storage_data_lake_gen2_filesystem_id = azurerm_storage_data_lake_gen2_filesystem.sadlgen2.id
+  storage_data_lake_gen2_filesystem_id = var.workspace.storage_data_lake_gen2_filesystem_id
   sql_administrator_login              = var.workspace.sql_administrator_login
   sql_administrator_login_password     = var.workspace.sql_administrator_login_password
   azuread_authentication_only          = try(var.workspace.azuread_authentication_only, false)
@@ -85,13 +80,14 @@ resource "azurerm_synapse_workspace_aad_admin" "synapse_workspace" {
   tenant_id            = try(each.value.tenant_id, data.azurerm_client_config.current.tenant_id)
 }
 
+# firewall rule
 resource "azurerm_synapse_firewall_rule" "synapse_firewall_rule" {
   for_each = {
     for key, rule in try(var.workspace.firewall_rule, {}) : key => rule
   }
 
   synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
-  name                 = try(each.value.name, each.key)
+  name                 = try(each.value.name, join("-", [var.naming.synapse_firewall_rule, each.key]))
   start_ip_address     = each.value.start_ip_address
   end_ip_address       = each.value.end_ip_address
 }
@@ -102,7 +98,7 @@ resource "azurerm_synapse_sql_pool" "synapse_sql_pool" {
     for key, sql_pool in try(var.workspace.sql_pool, {}) : key => sql_pool
   }
 
-  name                      = try(each.value.name, each.key)
+  name                      = try(each.value.name, join("-", [var.naming.synapse_sql_pool, each.key]))
   synapse_workspace_id      = azurerm_synapse_workspace.synapse_workspace.id
   sku_name                  = each.value.sku_name
   create_mode               = try(each.value.create_mode, "Default")
@@ -131,7 +127,7 @@ resource "azurerm_synapse_spark_pool" "synapse_spark_pool" {
     for key, spark_pool in try(var.workspace.spark_pool, {}) : key => spark_pool
   }
 
-  name                                = try(each.value.name, each.key)
+  name                                = try(each.value.name, join("-", [var.naming.synapse_spark_pool, each.key]))
   synapse_workspace_id                = azurerm_synapse_workspace.synapse_workspace.id
   node_size_family                    = each.value.node_size_family
   node_size                           = each.value.node_size
@@ -199,46 +195,50 @@ resource "azurerm_synapse_managed_private_endpoint" "synapse_managed_private_end
     for key, managed_pe in try(var.workspace.managed_private_endpoint, {}) : key => managed_pe
   }
 
-  name                 = try(each.value.name, each.key)
+  name                 = try(each.value.name, join("-", [var.naming.synapse_managed_private_endpoint, each.key]))
   synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
   target_resource_id   = each.value.target_resource_id
   subresource_name     = each.value.subresource_name
 }
 
+# user assigned identity
 resource "azurerm_user_assigned_identity" "identity" {
   for_each = contains(["UserAssigned", "SystemAssigned, UserAssigned"], try(var.workspace.identity.type, "")) ? { "identity" = var.workspace.identity } : {}
 
   name                = try(each.value.name, "uai-${var.workspace.name}")
-  resource_group_name = var.workspace.resourcegroup
+  resource_group_name = var.workspace.resource_group
   location            = var.workspace.location
   tags                = try(var.workspace.tags, {})
 }
 
+# integration runtime self hosted
 resource "azurerm_synapse_integration_runtime_self_hosted" "synapse_irsh" {
   for_each = {
     for key, irsh in try(var.workspace.integration_runtime_self_hosted, {}) : key => irsh
   }
 
-  name                 = try(each.value.name, each.key)
+  name                 = try(each.value.name, join("-", [var.naming.synapse_integration_runtime_self_hosted, each.key]))
   synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
 }
 
+# integration runtime azure
 resource "azurerm_synapse_integration_runtime_azure" "synapse_ira" {
   for_each = {
     for key, ira in try(var.workspace.integration_runtime_azure, {}) : key => ira
   }
 
-  name                 = try(each.value.name, each.key)
+  name                 = try(each.value.name, join("-", [var.naming.synapse_integration_runtime_azure, each.key]))
   synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
   location             = try(each.value.location, var.workspace.location)
 }
 
+# linked service
 resource "azurerm_synapse_linked_service" "synapse_linked_service" {
   for_each = {
     for key, linked_service in try(var.workspace.linked_service, {}) : key => linked_service
   }
 
-  name                  = try(each.value.name, each.key)
+  name                  = try(each.value.name, join("-", [var.naming.synapse_linked_service, each.key]))
   synapse_workspace_id  = azurerm_synapse_workspace.synapse_workspace.id
   type                  = each.value.type
   type_properties_json  = each.value.type_properties_json
@@ -260,6 +260,7 @@ resource "azurerm_synapse_linked_service" "synapse_linked_service" {
   ]
 }
 
+# workspace key
 resource "azurerm_synapse_workspace_key" "workspace_key" {
   for_each                            = try(var.workspace.customer_managed_key, null) != null ? { default = var.workspace.customer_managed_key } : {}
   customer_managed_key_versionless_id = each.value.key_versionless_id
