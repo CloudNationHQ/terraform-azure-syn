@@ -69,7 +69,7 @@ resource "azurerm_synapse_workspace" "synapse_workspace" {
 
 # aad admin
 resource "azurerm_synapse_workspace_aad_admin" "synapse_workspace" {
-  for_each             = try(var.workspace.aad_admin, null) != null ? { default = var.workspace.aad_admin } : {}
+  for_each = try(var.workspace.aad_admin, null) != null ? { default = var.workspace.aad_admin } : {}
 
   synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
   login                = each.value.login
@@ -259,7 +259,7 @@ resource "azurerm_synapse_linked_service" "synapse_linked_service" {
 
 # workspace key
 resource "azurerm_synapse_workspace_key" "workspace_key" {
-  for_each                            = try(var.workspace.customer_managed_key, null) != null ? { default = var.workspace.customer_managed_key } : {}
+  for_each = try(var.workspace.customer_managed_key, null) != null ? { default = var.workspace.customer_managed_key } : {}
 
   customer_managed_key_versionless_id = each.value.key_versionless_id
   synapse_workspace_id                = azurerm_synapse_workspace.synapse_workspace.id
