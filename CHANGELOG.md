@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.4.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v0.3.0...v0.4.0) (2024-08-13)
+## [0.4.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v0.3.0...v0.4.0) (2024-08-13) 
 
 
 ### Features
