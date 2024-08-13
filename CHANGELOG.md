@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v0.4.0...v0.5.0) (2024-08-13)
+
+
+### Features
+
+* small cleanup ([#15](https://github.com/CloudNationHQ/terraform-azure-syn/issues/15)) ([3f8607a](https://github.com/CloudNationHQ/terraform-azure-syn/commit/3f8607ae74dbcc97282475dfad7d2f1b9bec866b))
+
 ## [0.4.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v0.3.0...v0.4.0) (2024-08-13) 
 
 
