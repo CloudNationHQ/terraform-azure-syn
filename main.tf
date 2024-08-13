@@ -1,6 +1,6 @@
 data "azurerm_client_config" "current" {}
 
-# synapse workspace
+# workspace
 resource "azurerm_synapse_workspace" "synapse_workspace" {
   name                                 = var.workspace.name
   resource_group_name                  = try(var.workspace.resource_group, var.resource_group)
@@ -18,7 +18,6 @@ resource "azurerm_synapse_workspace" "synapse_workspace" {
   purview_id                           = try(var.workspace.purview_id, null)
   sql_identity_control_enabled         = try(var.workspace.sql_identity_control_enabled, false)
 
-  # block
   dynamic "azure_devops_repo" {
     for_each = try(var.workspace.azure_devops_repo, null) != null ? { default = var.workspace.azure_devops_repo } : {}
     content {
@@ -32,7 +31,6 @@ resource "azurerm_synapse_workspace" "synapse_workspace" {
     }
   }
 
-  # block
   dynamic "customer_managed_key" {
     for_each = try(var.workspace.customer_managed_key, null) != null ? { default = var.workspace.customer_managed_key } : {}
     content {
@@ -42,7 +40,6 @@ resource "azurerm_synapse_workspace" "synapse_workspace" {
     }
   }
 
-  # block
   dynamic "identity" {
     for_each = [lookup(var.workspace, "identity", { type = "SystemAssigned", identity_ids = [] })]
 
@@ -55,7 +52,6 @@ resource "azurerm_synapse_workspace" "synapse_workspace" {
     }
   }
 
-  # block
   dynamic "github_repo" {
     for_each = try(var.workspace.github_repo, null) != null ? { default = var.workspace.github_repo } : {}
     content {
@@ -73,14 +69,15 @@ resource "azurerm_synapse_workspace" "synapse_workspace" {
 
 # aad admin
 resource "azurerm_synapse_workspace_aad_admin" "synapse_workspace" {
-  for_each             = try(var.workspace.aad_admin, null) != null ? { default = var.workspace.aad_admin } : {}
+  for_each = try(var.workspace.aad_admin, null) != null ? { default = var.workspace.aad_admin } : {}
+
   synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
   login                = each.value.login
   object_id            = try(each.value.object_id, data.azurerm_client_config.current.object_id)
   tenant_id            = try(each.value.tenant_id, data.azurerm_client_config.current.tenant_id)
 }
 
-# firewall rule
+# firewall rules
 resource "azurerm_synapse_firewall_rule" "synapse_firewall_rule" {
   for_each = {
     for key, rule in try(var.workspace.firewall_rule, {}) : key => rule
@@ -92,7 +89,7 @@ resource "azurerm_synapse_firewall_rule" "synapse_firewall_rule" {
   end_ip_address       = each.value.end_ip_address
 }
 
-# sql pool
+# sql pools
 resource "azurerm_synapse_sql_pool" "synapse_sql_pool" {
   for_each = {
     for key, sql_pool in try(var.workspace.sql_pool, {}) : key => sql_pool
@@ -108,7 +105,7 @@ resource "azurerm_synapse_sql_pool" "synapse_sql_pool" {
   geo_backup_policy_enabled = try(each.value.geo_backup_policy_enabled, true)
   storage_account_type      = try(each.value.storage_account_type, "GRS")
 
-  # Does not work as currently it is not possible to test
+  # needs to be tested
   dynamic "restore" {
     for_each = try(each.value.restore, null) != null ? { default = each.value.restore } : {}
     content {
@@ -121,7 +118,7 @@ resource "azurerm_synapse_sql_pool" "synapse_sql_pool" {
 
 }
 
-# spark pool
+# spark pools
 resource "azurerm_synapse_spark_pool" "synapse_spark_pool" {
   for_each = {
     for key, spark_pool in try(var.workspace.spark_pool, {}) : key => spark_pool
@@ -189,7 +186,7 @@ resource "azurerm_synapse_role_assignment" "synapse_role_assignment" {
 }
 
 
-# managed_private_endpoint
+# endpoint
 resource "azurerm_synapse_managed_private_endpoint" "synapse_managed_private_endpoint" {
   for_each = {
     for key, managed_pe in try(var.workspace.managed_private_endpoint, {}) : key => managed_pe
@@ -262,9 +259,11 @@ resource "azurerm_synapse_linked_service" "synapse_linked_service" {
 
 # workspace key
 resource "azurerm_synapse_workspace_key" "workspace_key" {
-  for_each                            = try(var.workspace.customer_managed_key, null) != null ? { default = var.workspace.customer_managed_key } : {}
+  for_each = try(var.workspace.customer_managed_key, null) != null ? { default = var.workspace.customer_managed_key } : {}
+
   customer_managed_key_versionless_id = each.value.key_versionless_id
   synapse_workspace_id                = azurerm_synapse_workspace.synapse_workspace.id
   active                              = true
   customer_managed_key_name           = each.value.key_name
 }
+

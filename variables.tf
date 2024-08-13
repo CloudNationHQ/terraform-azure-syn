@@ -10,13 +10,13 @@ variable "naming" {
 }
 
 variable "location" {
-  description = "default azure region and can be used if location is not specified inside the object."
+  description = "default azure region to be used."
   type        = string
   default     = null
 }
 
 variable "resource_group" {
-  description = "default resource group and can be used if resource_group is not specified inside the object."
+  description = "default resource group to be used."
   type        = string
   default     = null
 }

@@ -11,12 +11,21 @@ A primary goal is to utilize keys and values in the object that correspond to th
 
 A last key goal is to separate logic from configuration in the module, thereby enhancing its scalability, ease of customization, and manageability.
 
+## Non-Goals
+
+These modules are not intended to be complete, ready-to-use solutions; they are designed as components for creating your own patterns.
+
+They are not tailored for a single use case but are meant to be versatile and applicable to a range of scenarios.
+
+Security standardization is applied at the pattern level, while the modules include default values based on best practices but do not enforce specific security standards.
+
+End-to-end testing is not conducted on these modules, as they are individual components and do not undergo the extensive testing reserved for complete patterns or solutions.
+
 ## Features
 
-- Create a synapse workspace
-- Add SQL and Spark pools
-- Add integration runtimes (Azure or/and Self-Hosted)
-- Add managed private endpoints and linked services
+- Create and manage SQL/Spark pools.
+- Configure azure and self-hosted integration runtimes
+- Set up managed private endpoints and linked services
 
 ## Requirements
 
@@ -45,8 +54,9 @@ A last key goal is to separate logic from configuration in the module, thereby e
 | [azurerm_synapse_integration_runtime_self_hosted](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/synapse_integration_runtime_self_hosted) | resource |
 | [azurerm_synapse_integration_runtime_azure](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/synapse_integration_runtime_azure) | resource |
 | [azurerm_synapse_linked_service](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/synapse_linked_service) | resource |
-| [synapse_workspace_key](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/synapse_workspace_key)| resource |
-| [user_assigned_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
+| [azurerm_synapse_workspace_key](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/synapse_workspace_key)| resource |
+| [azurerm_user_assigned_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
+| [azurerm_client_config](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) | data source |
 
 ## Inputs
 
@@ -54,6 +64,8 @@ A last key goal is to separate logic from configuration in the module, thereby e
 | :-- | :-- | :-- | :-- |
 | `workspace` | describes synapse related configuration | object | yes |
 | `naming` | contains naming convention  | string | yes |
+| `location` | default azure region to be used  | string | yes |
+| `resource_group` | default resource group to be used | string | yes |
 
 ## Outputs
 
@@ -87,6 +99,12 @@ Full examples detailing all usages, along with integrations with dependency modu
 ## Authors
 
 Module is maintained by [these awesome contributors](https://github.com/cloudnationhq/terraform-azure-syn/graphs/contributors).
+
+## Contributing
+
+We welcome contributions from the community! Whether it's reporting a bug, suggesting a new feature, or submitting a pull request, your input is highly valued.
+
+For more information, please see our contribution [guidelines](https://github.com/CloudNationHQ/terraform-azure-syn/blob/main/CONTRIBUTING.md).
 
 ## License
 
