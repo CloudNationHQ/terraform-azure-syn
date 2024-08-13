@@ -1,5 +1,6 @@
-# terraform-azure-syn
-Terraform module which creates synapse related resources used by workloads and accelerators.
+# Synapse Workspaces
+
+This terraform module streamlines the setup and management of azure synapse workspaces, providing customizable configurations for sql and spark pools, data integration, analytics, and much more.
 
 ## Goals
 
