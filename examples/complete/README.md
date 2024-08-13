@@ -9,7 +9,7 @@ This example uses a data block to grab the public IP that is used run the terraf
 ```hcl
 module "synapse" {
   source  = "cloudnationhq/synapse/azure"
-  version = "~> 0.1"
+  version = "~> 0.2"
 
   naming = local.naming
 

@@ -5,7 +5,7 @@ This example highlights the default usage.
 ```hcl
 module "synapse" {
   source  = "cloudnationhq/synapse/azure"
-  version = "~> 0.1"
+  version = "~> 0.2"
 
   naming = local.naming
 

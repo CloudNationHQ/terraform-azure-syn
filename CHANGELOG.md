@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v0.1.0...v0.2.0) (2024-08-13)
+
+
+### Features
+
+* update release config and documentation ([#8](https://github.com/CloudNationHQ/terraform-azure-syn/issues/8)) ([e637c90](https://github.com/CloudNationHQ/terraform-azure-syn/commit/e637c900046fa9a9b45937c50103f142680409be))
+
 ## 0.1.0 (2024-08-07)
 
 
