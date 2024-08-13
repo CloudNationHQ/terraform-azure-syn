@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v0.2.0...v0.3.0) (2024-08-13)
+
+
+### Features
+
+* add usage examples for sql and spark pools ([#10](https://github.com/CloudNationHQ/terraform-azure-syn/issues/10)) ([7f08506](https://github.com/CloudNationHQ/terraform-azure-syn/commit/7f085067cc7046427997abbd386c774a20344fe8))
+* made some small change in codeowners file ([#12](https://github.com/CloudNationHQ/terraform-azure-syn/issues/12)) ([15f0a6b](https://github.com/CloudNationHQ/terraform-azure-syn/commit/15f0a6bd0c0587eca301161071467e3494b3f68b))
+
 ## [0.2.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v0.1.0...v0.2.0) (2024-08-13)
 
 
