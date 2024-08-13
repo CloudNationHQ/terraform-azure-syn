@@ -1,4 +1,4 @@
-CHANGELOG.md        @CloudNationHQ/SG-MDM-GitHub-Azure-Wam-Release
-CODEOWNERS          @CloudNationHQ/SG-MDM-GitHub-Azure-Wam-Release
+/CHANGELOG.md               @CloudNationHQ/SG-MDM-GitHub-Azure-Wam-Release
+/.github/CODEOWNERS         @CloudNationHQ/SG-MDM-GitHub-Azure-Wam-Release
 
-* @CloudNationHQ/SG-MDM-GitHub-Azure-Wam
+*                           @CloudNationHQ/SG-MDM-GitHub-Azure-Wam
