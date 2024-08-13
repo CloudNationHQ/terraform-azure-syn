@@ -72,9 +72,9 @@ End-to-end testing is not conducted on these modules, as they are individual com
 
 | Name | Description |
 | :-- | :-- |
-| `synapse_workspace` | contains all synapse workspace configuration |
-| `synapse_sql_pool` | contains sql pool(s) configuration |
-| `synapse_spark_pool` | contains spark pool(s) configuration |
+| `workspace` | contains all synapse workspace configuration |
+| `sql_pools` | contains sql pool(s) configuration |
+| `spark_pools` | contains spark pool(s) configuration |
 | `user_assigned_identities` | contains user assigned identity information |
 
 ## Testing
