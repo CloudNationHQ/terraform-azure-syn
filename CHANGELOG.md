@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v0.3.0...v0.4.0) (2024-08-13) 
+
+
+### Features
+
+* change output names to be more descriptive ([#13](https://github.com/CloudNationHQ/terraform-azure-syn/issues/13)) ([42c312c](https://github.com/CloudNationHQ/terraform-azure-syn/commit/42c312c3c3ddbf4006fa4ba9d62a21439eaf8065))
+
 ## [0.3.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v0.2.0...v0.3.0) (2024-08-13)
 
 
