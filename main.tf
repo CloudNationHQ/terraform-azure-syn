@@ -6,7 +6,7 @@ resource "azurerm_synapse_workspace" "synapse_workspace" {
   resource_group_name                  = try(var.workspace.resource_group, var.resource_group)
   location                             = try(var.workspace.location, var.location)
   storage_data_lake_gen2_filesystem_id = var.workspace.storage_data_lake_gen2_filesystem_id
-  sql_administrator_login              = var.workspace.sql_administrator_login
+  sql_administrator_login              = try(var.workspace.sql_administrator_login, "sqladminuser")
   sql_administrator_login_password     = var.workspace.sql_administrator_login_password
   azuread_authentication_only          = try(var.workspace.azuread_authentication_only, false)
   compute_subnet_id                    = try(var.workspace.compute_subnet_id, null)
@@ -92,7 +92,7 @@ resource "azurerm_synapse_firewall_rule" "synapse_firewall_rule" {
 # sql pools
 resource "azurerm_synapse_sql_pool" "synapse_sql_pool" {
   for_each = {
-    for key, sql_pool in try(var.workspace.sql_pool, {}) : key => sql_pool
+    for key, sql_pool in try(var.workspace.sql_pools, {}) : key => sql_pool
   }
 
   name                      = try(each.value.name, join("-", [var.naming.synapse_sql_pool, each.key]))
@@ -121,10 +121,10 @@ resource "azurerm_synapse_sql_pool" "synapse_sql_pool" {
 # spark pools
 resource "azurerm_synapse_spark_pool" "synapse_spark_pool" {
   for_each = {
-    for key, spark_pool in try(var.workspace.spark_pool, {}) : key => spark_pool
+    for key, spark_pool in try(var.workspace.spark_pools, {}) : key => spark_pool
   }
 
-  name                                = try(each.value.name, join("-", [var.naming.synapse_spark_pool, each.key]))
+  name                                = try(each.value.name, join("", [var.naming.synapse_spark_pool, each.key]))
   synapse_workspace_id                = azurerm_synapse_workspace.synapse_workspace.id
   node_size_family                    = each.value.node_size_family
   node_size                           = each.value.node_size
