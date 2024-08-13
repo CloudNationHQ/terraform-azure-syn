@@ -1,5 +1,3 @@
 primaryBranch: main
 handleGHRelease: true
-releaseType: terraform-module
-ignoreFiles:
-  - "**/README.md"
+releaseType: go
