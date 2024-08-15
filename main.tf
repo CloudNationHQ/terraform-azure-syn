@@ -218,17 +218,6 @@ resource "azurerm_synapse_integration_runtime_self_hosted" "synapse_irsh" {
   synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
 }
 
-# integration runtime azure
-resource "azurerm_synapse_integration_runtime_azure" "synapse_ira" {
-  for_each = {
-    for key, ira in try(var.workspace.integration_runtime_azure, {}) : key => ira
-  }
-
-  name                 = try(each.value.name, join("-", [var.naming.synapse_integration_runtime_azure, each.key]))
-  synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
-  location             = try(each.value.location, var.workspace.location)
-}
-
 # linked service
 resource "azurerm_synapse_linked_service" "synapse_linked_service" {
   for_each = {
