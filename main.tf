@@ -266,4 +266,3 @@ resource "azurerm_synapse_workspace_key" "workspace_key" {
   active                              = true
   customer_managed_key_name           = each.value.key_name
 }
-
