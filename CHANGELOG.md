@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v0.5.0...v0.6.0) (2024-08-29)
+
+
+### Features
+
+* added code of conduct and security documentation ([#19](https://github.com/CloudNationHQ/terraform-azure-syn/issues/19)) ([fa4e1c1](https://github.com/CloudNationHQ/terraform-azure-syn/commit/fa4e1c168e7fe6c0c509c97e8b234520bb9e6a26))
+* small update release behaviour ([#17](https://github.com/CloudNationHQ/terraform-azure-syn/issues/17)) ([c07c24e](https://github.com/CloudNationHQ/terraform-azure-syn/commit/c07c24e27bdbfb2f30932f7e979b388f0577b758))
+
+
+### Bug Fixes
+
+* Sanitize go testing ([#20](https://github.com/CloudNationHQ/terraform-azure-syn/issues/20)) ([66016e1](https://github.com/CloudNationHQ/terraform-azure-syn/commit/66016e117a31ac38d8e798ca247ec693baf863eb))
+
 ## [0.5.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v0.4.0...v0.5.0) (2024-08-13)
 
 
