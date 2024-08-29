@@ -1,6 +1,6 @@
 module github.com/cloudnationhq/terraform-azure-syn
 
-go 1.20
+go 1.23.0
 
 require github.com/gruntwork-io/terratest v0.47.0
 
