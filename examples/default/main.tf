@@ -2,7 +2,7 @@ module "naming" {
   source  = "cloudnationhq/naming/azure"
   version = "~> 0.1"
 
-  suffix = ["syn", "default"]
+  suffix = ["demo", "dev"]
 }
 
 module "rg" {
