@@ -7,19 +7,19 @@ module "naming" {
 
 module "rg" {
   source  = "cloudnationhq/rg/azure"
-  version = "~> 0.1"
+  version = "~> 2.0"
 
   groups = {
     syn = {
-      name   = module.naming.resource_group.name
-      region = "eastus2"
+      name     = module.naming.resource_group.name
+      location = "eastus2"
     }
   }
 }
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 1.0"
+  version = "~> 2.0"
 
   naming = local.naming
 
@@ -37,14 +37,15 @@ module "storage" {
 
 module "kv" {
   source  = "cloudnationhq/kv/azure"
-  version = "~> 0.1"
+  version = "~> 2.0"
 
   naming = local.naming
 
   vault = {
-    name          = module.naming.key_vault.name_unique
-    location      = module.rg.groups.syn.location
-    resourcegroup = module.rg.groups.syn.name
+    name           = module.naming.key_vault.name_unique
+    location       = module.rg.groups.syn.location
+    resource_group = module.rg.groups.syn.name
+
     secrets = {
       random_string = {
         synapse-admin-password = {
@@ -60,7 +61,7 @@ module "kv" {
 
 module "synapse" {
   source  = "cloudnationhq/syn/azure"
-  version = "~> 0.1"
+  version = "~> 1.0"
 
   naming = local.naming
 
