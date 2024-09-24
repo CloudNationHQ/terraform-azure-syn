@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v0.6.0...v1.0.0) (2024-09-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* * Version 4 of the azurerm provider includes breaking changes.
+
+### Features
+
+* upgrade azurerm provder to v4 ([#22](https://github.com/CloudNationHQ/terraform-azure-syn/issues/22)) ([dac9407](https://github.com/CloudNationHQ/terraform-azure-syn/commit/dac94070045f0defcb3493bd6733c29fad21f866))
+
 ## [0.6.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v0.5.0...v0.6.0) (2024-08-29)
 
 
