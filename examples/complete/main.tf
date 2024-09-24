@@ -7,19 +7,19 @@ module "naming" {
 
 module "rg" {
   source  = "cloudnationhq/rg/azure"
-  version = "~> 0.1"
+  version = "~> 2.0"
 
   groups = {
     syn = {
-      name   = module.naming.resource_group.name
-      region = "westeurope"
+      name     = module.naming.resource_group.name
+      location = "westeurope"
     }
   }
 }
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 1.0"
+  version = "~> 2.0"
 
   naming = local.naming
 
@@ -39,7 +39,7 @@ module "storage" {
 
 module "kv" {
   source  = "cloudnationhq/kv/azure"
-  version = "~> 0.1"
+  version = "~> 2.0"
 
   naming = local.naming
   vault  = local.vault
@@ -47,15 +47,16 @@ module "kv" {
 
 module "network" {
   source  = "cloudnationhq/vnet/azure"
-  version = "~> 2.0"
+  version = "~> 4.0"
 
   naming = local.naming
 
   vnet = {
-    name          = module.naming.virtual_network.name
-    location      = module.rg.groups.syn.location
-    resourcegroup = module.rg.groups.syn.name
-    cidr          = ["10.0.0.0/16"]
+    name           = module.naming.virtual_network.name
+    location       = module.rg.groups.syn.location
+    resource_group = module.rg.groups.syn.name
+    cidr           = ["10.0.0.0/16"]
+
     subnets = {
       sn1 = {
         cidr = ["10.0.0.0/24"]
@@ -68,7 +69,7 @@ module "network" {
 
 module "synapse" {
   source  = "cloudnationhq/syn/azure"
-  version = "~> 0.1"
+  version = "~> 1.0"
 
   naming    = local.naming
   workspace = local.workspace

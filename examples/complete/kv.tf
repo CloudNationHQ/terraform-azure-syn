@@ -1,8 +1,8 @@
 locals {
   vault = {
-    name          = module.naming.key_vault.name_unique
-    location      = module.rg.groups.syn.location
-    resourcegroup = module.rg.groups.syn.name
+    name           = module.naming.key_vault.name_unique
+    location       = module.rg.groups.syn.location
+    resource_group = module.rg.groups.syn.name
     secrets = {
       random_string = {
         synapse-admin-password = {
