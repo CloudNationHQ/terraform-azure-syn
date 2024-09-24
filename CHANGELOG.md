@@ -9,7 +9,7 @@
 
 ### Features
 
-* upgrade azurerm provder to v4 ([#22](https://github.com/CloudNationHQ/terraform-azure-syn/issues/22)) ([dac9407](https://github.com/CloudNationHQ/terraform-azure-syn/commit/dac94070045f0defcb3493bd6733c29fad21f866))
+* upgrade azurerm provider to v4 ([#22](https://github.com/CloudNationHQ/terraform-azure-syn/issues/22)) ([dac9407](https://github.com/CloudNationHQ/terraform-azure-syn/commit/dac94070045f0defcb3493bd6733c29fad21f866))
 
 ### Upgrade from v0.6.0 to v1.0.0:
 
