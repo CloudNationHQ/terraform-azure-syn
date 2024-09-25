@@ -64,7 +64,7 @@ resource "azurerm_synapse_workspace" "synapse_workspace" {
     }
   }
 
-  tags = try(var.workspace.tags, {})
+  tags = try(var.workspace.tags, var.tags)
 }
 
 # aad admin
@@ -114,7 +114,7 @@ resource "azurerm_synapse_sql_pool" "synapse_sql_pool" {
     }
   }
 
-  tags = try(var.workspace.tags, {})
+  tags = try(var.workspace.tags, var.tags)
 
 }
 
@@ -170,7 +170,7 @@ resource "azurerm_synapse_spark_pool" "synapse_spark_pool" {
     }
   }
 
-  tags = try(var.workspace.tags, {})
+  tags = try(var.workspace.tags, var.tags)
 }
 
 # role assignment
@@ -205,7 +205,7 @@ resource "azurerm_user_assigned_identity" "identity" {
   name                = try(each.value.name, "uai-${var.workspace.name}")
   resource_group_name = var.workspace.resource_group
   location            = var.workspace.location
-  tags                = try(var.workspace.tags, {})
+  tags                = try(var.workspace.tags, var.tags)
 }
 
 # integration runtime self hosted
