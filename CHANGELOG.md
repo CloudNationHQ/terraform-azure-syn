@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v1.0.1...v1.1.0) (2024-10-11)
+
+
+### Features
+
+* auto generated docs and refine makefile ([#27](https://github.com/CloudNationHQ/terraform-azure-syn/issues/27)) ([84f80a1](https://github.com/CloudNationHQ/terraform-azure-syn/commit/84f80a1d2d0efab25654269a01298a6bc3144d60))
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#26](https://github.com/CloudNationHQ/terraform-azure-syn/issues/26)) ([507a6a3](https://github.com/CloudNationHQ/terraform-azure-syn/commit/507a6a37245351955ef1946105b14a8aab660ba5))
+
 ## [1.0.1](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v1.0.0...v1.0.1) (2024-09-25)
 
 
