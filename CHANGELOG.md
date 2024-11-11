@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v1.1.0...v1.2.0) (2024-11-11)
+
+
+### Features
+
+* enhance testing with sequential, parallel modes and flags for exceptions and skip-destroy ([#29](https://github.com/CloudNationHQ/terraform-azure-syn/issues/29)) ([1ac77fc](https://github.com/CloudNationHQ/terraform-azure-syn/commit/1ac77fcfd16904394dfa88a4c1bf261d388bb4a8))
+
 ## [1.1.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v1.0.1...v1.1.0) (2024-10-11)
 
 
