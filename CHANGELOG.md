@@ -11,6 +11,11 @@
 
 * add type definitions and change data structure ([#44](https://github.com/CloudNationHQ/terraform-azure-syn/issues/44)) ([e88e4a5](https://github.com/CloudNationHQ/terraform-azure-syn/commit/e88e4a5c85f0c46148c204572491292f57d9d106))
 
+### Upgrade from v1.3.0 to v2.0.0:
+
+- Update module reference to: `version = "~> 2.0"`
+- The property and variable resource_group is renamed to resource_group_name
+
 ## [1.3.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v1.2.0...v1.3.0) (2025-01-20)
 
 
