@@ -31,7 +31,9 @@ module "storage" {
     is_hns_enabled      = true
 
     file_systems = {
-      adls-gen2 = {}
+      adls-gen2 = {
+        name = module.naming.storage_data_lake_gen2_filesystem.name
+      }
     }
   }
 }
@@ -76,6 +78,18 @@ module "synapse" {
 
     identity = {
       type = "SystemAssigned"
+    }
+
+    integration_runtime_azure = {
+      ira1 = {
+        name = module.naming.synapse_integration_runtime_azure.name
+      }
+    }
+
+    integration_runtime_self_hosted = {
+      irs1 = {
+        name = module.naming.synapse_integration_runtime_self_hosted.name
+      }
     }
   }
 }
