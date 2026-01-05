@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v1.3.0...v2.0.0) (2026-01-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* this change causes recreates
+
+### Features
+
+* add type definitions and change data structure ([#44](https://github.com/CloudNationHQ/terraform-azure-syn/issues/44)) ([e88e4a5](https://github.com/CloudNationHQ/terraform-azure-syn/commit/e88e4a5c85f0c46148c204572491292f57d9d106))
+
 ## [1.3.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v1.2.0...v1.3.0) (2025-01-20)
 
 
