@@ -1,6 +1,6 @@
 module "naming" {
   source  = "cloudnationhq/naming/azure"
-  version = "~> 0.1"
+  version = "~> 0.26"
 
   suffix = ["demo", "dev"]
 }
@@ -19,16 +19,17 @@ module "rg" {
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 2.0"
+  version = "~> 4.0"
 
   naming = local.naming
 
   storage = {
-    name              = module.naming.storage_account.name_unique
-    location          = module.rg.groups.syn.location
-    resource_group    = module.rg.groups.syn.name
-    threat_protection = true
-    is_hns_enabled    = true
+    name                = module.naming.storage_account.name_unique
+    location            = module.rg.groups.syn.location
+    resource_group_name = module.rg.groups.syn.name
+    threat_protection   = true
+    is_hns_enabled      = true
+
     file_systems = {
       adls-gen2 = {}
     }
@@ -37,14 +38,14 @@ module "storage" {
 
 module "kv" {
   source  = "cloudnationhq/kv/azure"
-  version = "~> 2.0"
+  version = "~> 4.0"
 
   naming = local.naming
 
   vault = {
-    name           = module.naming.key_vault.name_unique
-    location       = module.rg.groups.syn.location
-    resource_group = module.rg.groups.syn.name
+    name                = module.naming.key_vault.name_unique
+    location            = module.rg.groups.syn.location
+    resource_group_name = module.rg.groups.syn.name
 
     secrets = {
       random_string = {
@@ -61,16 +62,20 @@ module "kv" {
 
 module "synapse" {
   source  = "cloudnationhq/syn/azure"
-  version = "~> 1.0"
+  version = "~> 2.0"
 
   naming = local.naming
 
   workspace = {
-    name                                 = module.naming.synapse_workspace.name
+    name                                 = module.naming.synapse_workspace.name_unique
     storage_data_lake_gen2_filesystem_id = module.storage.file_systems.adls-gen2.id
     location                             = module.rg.groups.syn.location
-    resource_group                       = module.rg.groups.syn.name
+    resource_group_name                  = module.rg.groups.syn.name
     sql_administrator_login_password     = module.kv.secrets.synapse-admin-password.value
+
+    identity = {
+      type = "SystemAssigned"
+    }
 
     spark_pools = local.pools
   }

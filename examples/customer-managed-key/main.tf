@@ -31,7 +31,9 @@ module "storage" {
     is_hns_enabled      = true
 
     file_systems = {
-      adls-gen2 = {}
+      adls-gen2 = {
+        name = module.naming.storage_data_lake_gen2_filesystem.name
+      }
     }
   }
 }
@@ -57,6 +59,47 @@ module "kv" {
         }
       }
     }
+
+    keys = {
+      workspace-encryption-key = {
+        key_type = "RSA"
+        key_size = 2048
+        key_opts = [
+          "sign", "unwrapKey",
+          "verify", "wrapKey"
+        ]
+      }
+    }
+  }
+}
+
+module "uai" {
+  source  = "cloudnationhq/uai/azure"
+  version = "~> 2.0"
+
+  config = {
+    name                = module.naming.user_assigned_identity.name
+    location            = module.rg.groups.syn.location
+    resource_group_name = module.rg.groups.syn.name
+  }
+}
+
+module "rbac" {
+  source  = "cloudnationhq/rbac/azure"
+  version = "~> 2.0"
+
+  role_assignments = {
+    synapse_uai = {
+      object_id = module.uai.config.principal_id
+      type      = "ServicePrincipal"
+      roles = {
+        "Key Vault Crypto Service Encryption User" = {
+          scopes = {
+            kv = module.kv.vault.id
+          }
+        }
+      }
+    }
   }
 }
 
@@ -75,7 +118,14 @@ module "synapse" {
     sql_administrator_login_password     = module.kv.secrets.synapse-admin-password.value
 
     identity = {
-      type = "SystemAssigned"
+      type         = "SystemAssigned, UserAssigned"
+      identity_ids = [module.uai.config.id]
+    }
+
+    customer_managed_key = {
+      key_versionless_id        = module.kv.keys.workspace-encryption-key.versionless_id
+      key_name                  = module.kv.keys.workspace-encryption-key.name
+      user_assigned_identity_id = module.uai.config.id
     }
   }
 }

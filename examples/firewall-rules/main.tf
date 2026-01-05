@@ -31,7 +31,9 @@ module "storage" {
     is_hns_enabled      = true
 
     file_systems = {
-      adls-gen2 = {}
+      adls-gen2 = {
+        name = module.naming.storage_data_lake_gen2_filesystem.name
+      }
     }
   }
 }
@@ -76,6 +78,22 @@ module "synapse" {
 
     identity = {
       type = "SystemAssigned"
+    }
+
+    firewall_rule = {
+      azure_services = {
+        name             = "AllowAllWindowsAzureIps"
+        start_ip_address = "0.0.0.0"
+        end_ip_address   = "0.0.0.0"
+      }
+      corp_range = {
+        start_ip_address = "10.1.0.0"
+        end_ip_address   = "10.1.0.255"
+      }
+      partner_range = {
+        start_ip_address = "172.16.5.10"
+        end_ip_address   = "172.16.5.20"
+      }
     }
   }
 }
