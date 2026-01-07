@@ -99,9 +99,10 @@ variable "workspace" {
       }))
     })), {})
     role_assignment = optional(map(object({
-      role_name      = string
-      principal_id   = string
-      principal_type = string
+      role_name             = string
+      principal_id          = string
+      principal_type        = string
+      synapse_spark_pool_id = optional(string)
     })), {})
     managed_private_endpoint = optional(map(object({
       name               = optional(string)
@@ -109,11 +110,16 @@ variable "workspace" {
       subresource_name   = string
     })), {})
     integration_runtime_self_hosted = optional(map(object({
-      name = optional(string)
+      name        = optional(string)
+      description = optional(string)
     })), {})
     integration_runtime_azure = optional(map(object({
-      name     = optional(string)
-      location = optional(string)
+      name             = optional(string)
+      location         = optional(string)
+      compute_type     = optional(string, "General")
+      core_count       = optional(number, 8)
+      description      = optional(string)
+      time_to_live_min = optional(number, 0)
     })), {})
     linked_service = optional(map(object({
       name                  = optional(string)
