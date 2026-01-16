@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v2.0.0...v2.1.0) (2026-01-16)
+
+
+### Features
+
+* enhance role assignment and integration runtime variables for synapse workspace ([#46](https://github.com/CloudNationHQ/terraform-azure-syn/issues/46)) ([8024978](https://github.com/CloudNationHQ/terraform-azure-syn/commit/8024978a077fe7aae4ce73ce013e00dbc9c4a3bd))
+
 ## [2.0.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v1.3.0...v2.0.0) (2026-01-05)
 
 
