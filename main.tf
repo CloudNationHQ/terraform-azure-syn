@@ -204,10 +204,11 @@ resource "azurerm_synapse_spark_pool" "synapse_spark_pool" {
 resource "azurerm_synapse_role_assignment" "synapse_role_assignment" {
   for_each = var.workspace.role_assignment
 
-  synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
-  role_name            = each.value.role_name
-  principal_id         = each.value.principal_id
-  principal_type       = each.value.principal_type
+  synapse_workspace_id  = each.value.synapse_spark_pool_id == null ? azurerm_synapse_workspace.synapse_workspace.id : null
+  synapse_spark_pool_id = each.value.synapse_spark_pool_id
+  role_name             = each.value.role_name
+  principal_id          = each.value.principal_id
+  principal_type        = each.value.principal_type
 
   depends_on = [
     azurerm_synapse_firewall_rule.synapse_firewall_rule,
@@ -244,6 +245,7 @@ resource "azurerm_synapse_integration_runtime_self_hosted" "synapse_irsh" {
   )
 
   synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
+  description          = each.value.description
 }
 
 # integration runtime azure
@@ -263,6 +265,10 @@ resource "azurerm_synapse_integration_runtime_azure" "synapse_ira" {
   )
 
   synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
+  compute_type         = each.value.compute_type
+  core_count           = each.value.core_count
+  description          = each.value.description
+  time_to_live_min     = each.value.time_to_live_min
 }
 
 # linked service
