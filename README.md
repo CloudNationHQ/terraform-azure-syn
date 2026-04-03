@@ -158,9 +158,10 @@ object({
       }))
     })), {})
     role_assignment = optional(map(object({
-      role_name      = string
-      principal_id   = string
-      principal_type = string
+      role_name             = string
+      principal_id          = string
+      principal_type        = string
+      synapse_spark_pool_id = optional(string)
     })), {})
     managed_private_endpoint = optional(map(object({
       name               = optional(string)
@@ -168,11 +169,16 @@ object({
       subresource_name   = string
     })), {})
     integration_runtime_self_hosted = optional(map(object({
-      name = optional(string)
+      name        = optional(string)
+      description = optional(string)
     })), {})
     integration_runtime_azure = optional(map(object({
-      name     = optional(string)
-      location = optional(string)
+      name             = optional(string)
+      location         = optional(string)
+      compute_type     = optional(string, "General")
+      core_count       = optional(number, 8)
+      description      = optional(string)
+      time_to_live_min = optional(number, 0)
     })), {})
     linked_service = optional(map(object({
       name                  = optional(string)
@@ -230,6 +236,34 @@ Default: `{}`
 
 The following outputs are exported:
 
+### <a name="output_aad_admin"></a> [aad\_admin](#output\_aad\_admin)
+
+Description: contains all synapse workspace aad admin configuration
+
+### <a name="output_firewall_rules"></a> [firewall\_rules](#output\_firewall\_rules)
+
+Description: contains all synapse firewall rule configuration
+
+### <a name="output_integration_runtime_azure"></a> [integration\_runtime\_azure](#output\_integration\_runtime\_azure)
+
+Description: contains all synapse integration runtime azure configuration
+
+### <a name="output_integration_runtime_self_hosted"></a> [integration\_runtime\_self\_hosted](#output\_integration\_runtime\_self\_hosted)
+
+Description: contains all synapse integration runtime self hosted configuration
+
+### <a name="output_linked_services"></a> [linked\_services](#output\_linked\_services)
+
+Description: contains all synapse linked service configuration
+
+### <a name="output_managed_private_endpoints"></a> [managed\_private\_endpoints](#output\_managed\_private\_endpoints)
+
+Description: contains all synapse managed private endpoint configuration
+
+### <a name="output_role_assignments"></a> [role\_assignments](#output\_role\_assignments)
+
+Description: contains all synapse role assignment configuration
+
 ### <a name="output_spark_pools"></a> [spark\_pools](#output\_spark\_pools)
 
 Description: contains all synapse spark pool configuration
@@ -241,6 +275,10 @@ Description: contains all synapse sql pool configuration
 ### <a name="output_workspace"></a> [workspace](#output\_workspace)
 
 Description: contains all synapse workspace configuration
+
+### <a name="output_workspace_keys"></a> [workspace\_keys](#output\_workspace\_keys)
+
+Description: contains all synapse workspace key configuration
 <!-- END_TF_DOCS -->
 
 ## Goals
