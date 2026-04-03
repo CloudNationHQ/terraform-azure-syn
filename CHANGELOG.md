@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v2.1.0...v2.2.0) (2026-04-03)
+
+
+### Features
+
+* add missing outputs ([#51](https://github.com/CloudNationHQ/terraform-azure-syn/issues/51)) ([2b1fc1f](https://github.com/CloudNationHQ/terraform-azure-syn/commit/2b1fc1f95d7083106cbd0650d89d6dbee8f44550))
+* **deps:** bump github.com/cloudnationhq/az-cn-go-validor in /tests ([#49](https://github.com/CloudNationHQ/terraform-azure-syn/issues/49)) ([90b9c6c](https://github.com/CloudNationHQ/terraform-azure-syn/commit/90b9c6c07481adb6bc57cb31a83054351b4cbc87))
+
 ## [2.1.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v2.0.0...v2.1.0) (2026-01-16)
 
 
