@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v2.2.0...v2.3.0) (2026-05-05)
+
+
+### Features
+
+* **deps:** bump github.com/cloudnationhq/az-cn-go-validor in /tests ([#53](https://github.com/CloudNationHQ/terraform-azure-syn/issues/53)) ([d5bb66b](https://github.com/CloudNationHQ/terraform-azure-syn/commit/d5bb66bd11d560a8aea654e2fb546b70512b9ad6))
+
 ## [2.2.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v2.1.0...v2.2.0) (2026-04-03)
 
 
