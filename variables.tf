@@ -105,9 +105,10 @@ variable "workspace" {
       synapse_spark_pool_id = optional(string)
     })), {})
     managed_private_endpoint = optional(map(object({
-      name               = optional(string)
-      target_resource_id = string
-      subresource_name   = string
+      name                         = optional(string)
+      target_resource_id           = string
+      subresource_name             = string
+      fully_qualified_domain_names = optional(list(string))
     })), {})
     integration_runtime_self_hosted = optional(map(object({
       name        = optional(string)

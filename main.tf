@@ -225,9 +225,10 @@ resource "azurerm_synapse_managed_private_endpoint" "synapse_managed_private_end
     each.key
   )
 
-  synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
-  target_resource_id   = each.value.target_resource_id
-  subresource_name     = each.value.subresource_name
+  synapse_workspace_id         = azurerm_synapse_workspace.synapse_workspace.id
+  target_resource_id           = each.value.target_resource_id
+  subresource_name             = each.value.subresource_name
+  fully_qualified_domain_names = each.value.fully_qualified_domain_names
 
   depends_on = [
     azurerm_synapse_firewall_rule.synapse_firewall_rule,
