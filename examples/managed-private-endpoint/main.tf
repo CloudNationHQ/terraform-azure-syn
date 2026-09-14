@@ -68,11 +68,28 @@ module "synapse" {
     resource_group_name                  = module.rg.groups.syn.name
     sql_administrator_login              = "sqladminuser"
     sql_administrator_login_password     = module.kv.secrets.synapse-admin-password.value
+    managed_virtual_network_enabled      = true
 
     identity = {
       type = "SystemAssigned"
     }
 
-    sql_pools = local.pools
+    # managed private endpoints are created via the workspace dev endpoint
+    # (data plane), so the client running terraform must be allowed through
+    firewall_rule = {
+      allow_all = {
+        name             = "AllowAll"
+        start_ip_address = "0.0.0.0"
+        end_ip_address   = "255.255.255.255"
+      }
+    }
+
+    managed_private_endpoint = {
+      blob = {
+        name               = module.naming.synapse_managed_private_endpoint.name
+        target_resource_id = module.storage.account.id
+        subresource_name   = "blob"
+      }
+    }
   }
 }

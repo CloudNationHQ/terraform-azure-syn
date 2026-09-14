@@ -7,27 +7,24 @@ module "naming" {
 
 module "rg" {
   source  = "cloudnationhq/rg/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   groups = {
     syn = {
       name     = module.naming.resource_group.name_unique
-      location = "northeurope"
+      location = "germanywestcentral"
     }
   }
 }
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 4.0"
-
-  naming = local.naming
+  version = "~> 5.0"
 
   storage = {
     name                = module.naming.storage_account.name_unique
     location            = module.rg.groups.syn.location
     resource_group_name = module.rg.groups.syn.name
-    threat_protection   = true
     is_hns_enabled      = true
 
     file_systems = {
@@ -40,14 +37,13 @@ module "storage" {
 
 module "kv" {
   source  = "cloudnationhq/kv/azure"
-  version = "~> 4.0"
-
-  naming = local.naming
+  version = "~> 6.0"
 
   vault = {
-    name                = module.naming.key_vault.name_unique
-    location            = module.rg.groups.syn.location
-    resource_group_name = module.rg.groups.syn.name
+    name                     = module.naming.key_vault.name_unique
+    location                 = module.rg.groups.syn.location
+    resource_group_name      = module.rg.groups.syn.name
+    purge_protection_enabled = true
 
     secrets = {
       random_string = {
@@ -75,9 +71,9 @@ module "kv" {
 
 module "uai" {
   source  = "cloudnationhq/uai/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
-  config = {
+  identity = {
     name                = module.naming.user_assigned_identity.name
     location            = module.rg.groups.syn.location
     resource_group_name = module.rg.groups.syn.name
@@ -86,16 +82,18 @@ module "uai" {
 
 module "rbac" {
   source  = "cloudnationhq/rbac/azure"
-  version = "~> 2.0"
+  version = "~> 4.0"
 
   role_assignments = {
     synapse_uai = {
-      object_id = module.uai.config.principal_id
+      object_id = module.uai.identity.principal_id
       type      = "ServicePrincipal"
       roles = {
         "Key Vault Crypto Service Encryption User" = {
           scopes = {
-            kv = module.kv.vault.id
+            kv = {
+              id = module.kv.vault.id
+            }
           }
         }
       }
@@ -105,9 +103,7 @@ module "rbac" {
 
 module "synapse" {
   source  = "cloudnationhq/syn/azure"
-  version = "~> 2.0"
-
-  naming = local.naming
+  version = "~> 3.0"
 
   workspace = {
     name                                 = module.naming.synapse_workspace.name_unique
@@ -119,13 +115,13 @@ module "synapse" {
 
     identity = {
       type         = "SystemAssigned, UserAssigned"
-      identity_ids = [module.uai.config.id]
+      identity_ids = [module.uai.identity.id]
     }
 
     customer_managed_key = {
       key_versionless_id        = module.kv.keys.workspace-encryption-key.versionless_id
       key_name                  = module.kv.keys.workspace-encryption-key.name
-      user_assigned_identity_id = module.uai.config.id
+      user_assigned_identity_id = module.uai.identity.id
     }
   }
 }

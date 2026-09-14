@@ -1,17 +1,15 @@
-data "azurerm_client_config" "current" {}
+data "azurerm_client_config" "this" {}
 
 # workspace
-resource "azurerm_synapse_workspace" "synapse_workspace" {
+resource "azurerm_synapse_workspace" "this" {
   resource_group_name = coalesce(
-    lookup(
-      var.workspace, "resource_group_name", null
-    ), var.resource_group_name
+    var.workspace.resource_group_name, var.resource_group_name
   )
 
   location = coalesce(
-    lookup(var.workspace, "location", null
-    ), var.location
+    var.workspace.location, var.location
   )
+
 
   name                                 = var.workspace.name
   storage_data_lake_gen2_filesystem_id = var.workspace.storage_data_lake_gen2_filesystem_id
@@ -27,8 +25,12 @@ resource "azurerm_synapse_workspace" "synapse_workspace" {
   purview_id                           = var.workspace.purview_id
   sql_identity_control_enabled         = var.workspace.sql_identity_control_enabled
 
+  tags = coalesce(
+    var.workspace.tags, var.tags
+  )
+
   dynamic "azure_devops_repo" {
-    for_each = var.workspace.azure_devops_repo != null ? { default = var.workspace.azure_devops_repo } : {}
+    for_each = var.workspace.azure_devops_repo != null ? { "this" = var.workspace.azure_devops_repo } : {}
 
     content {
       account_name    = azure_devops_repo.value.account_name
@@ -42,7 +44,7 @@ resource "azurerm_synapse_workspace" "synapse_workspace" {
   }
 
   dynamic "customer_managed_key" {
-    for_each = var.workspace.customer_managed_key != null ? { default = var.workspace.customer_managed_key } : {}
+    for_each = var.workspace.customer_managed_key != null ? { "this" = var.workspace.customer_managed_key } : {}
 
     content {
       key_versionless_id        = customer_managed_key.value.key_versionless_id
@@ -52,7 +54,7 @@ resource "azurerm_synapse_workspace" "synapse_workspace" {
   }
 
   dynamic "identity" {
-    for_each = var.workspace.identity != null ? [var.workspace.identity] : []
+    for_each = var.workspace.identity != null ? { "this" = var.workspace.identity } : {}
 
     content {
       type         = identity.value.type
@@ -61,7 +63,7 @@ resource "azurerm_synapse_workspace" "synapse_workspace" {
   }
 
   dynamic "github_repo" {
-    for_each = var.workspace.github_repo != null ? { default = var.workspace.github_repo } : {}
+    for_each = var.workspace.github_repo != null ? { "this" = var.workspace.github_repo } : {}
 
     content {
       account_name    = github_repo.value.account_name
@@ -72,48 +74,94 @@ resource "azurerm_synapse_workspace" "synapse_workspace" {
       git_url         = github_repo.value.git_url
     }
   }
+}
+
+# private endpoints
+resource "azurerm_private_endpoint" "this" {
+  for_each = var.workspace.private_endpoints != null ? var.workspace.private_endpoints : {}
+
+  name = coalesce(
+    each.value.name, each.key
+  )
+
+  resource_group_name = coalesce(
+    var.workspace.resource_group_name, var.resource_group_name
+  )
+
+  location = coalesce(
+    var.workspace.location, var.location
+  )
+
+  subnet_id                     = each.value.subnet_resource_id
+  custom_network_interface_name = each.value.custom_network_interface_name
 
   tags = coalesce(
-    var.workspace.tags, var.tags
+    each.value.tags, var.tags
   )
+
+  private_service_connection {
+    name = coalesce(
+      each.value.private_service_connection_name, each.key
+    )
+
+    is_manual_connection           = each.value.is_manual_connection
+    private_connection_resource_id = azurerm_synapse_workspace.this.id
+    subresource_names              = each.value.subresource_name != null ? [each.value.subresource_name] : []
+    request_message                = each.value.request_message
+  }
+
+  dynamic "private_dns_zone_group" {
+    for_each = each.value.private_dns_zone_resource_ids != null ? { "this" = each.value.private_dns_zone_resource_ids } : {}
+
+    content {
+      name                 = "default"
+      private_dns_zone_ids = private_dns_zone_group.value
+    }
+  }
+
+  dynamic "ip_configuration" {
+    for_each = each.value.ip_configurations != null ? each.value.ip_configurations : {}
+
+    content {
+      name               = ip_configuration.value.name
+      private_ip_address = ip_configuration.value.private_ip_address
+      member_name        = ip_configuration.value.member_name
+      subresource_name   = ip_configuration.value.subresource_name
+    }
+  }
 }
 
 # aad admin
-resource "azurerm_synapse_workspace_aad_admin" "synapse_workspace" {
-  for_each = var.workspace.aad_admin != null ? { default = var.workspace.aad_admin } : {}
+resource "azurerm_synapse_workspace_aad_admin" "this" {
+  for_each = var.workspace.aad_admin != null ? { "this" = var.workspace.aad_admin } : {}
 
-  synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
+  synapse_workspace_id = azurerm_synapse_workspace.this.id
   login                = each.value.login
-  object_id            = coalesce(each.value.object_id, data.azurerm_client_config.current.object_id)
-  tenant_id            = coalesce(each.value.tenant_id, data.azurerm_client_config.current.tenant_id)
+  object_id            = coalesce(each.value.object_id, data.azurerm_client_config.this.object_id)
+  tenant_id            = coalesce(each.value.tenant_id, data.azurerm_client_config.this.tenant_id)
 }
 
 # firewall rules
-resource "azurerm_synapse_firewall_rule" "synapse_firewall_rule" {
+resource "azurerm_synapse_firewall_rule" "this" {
   for_each = var.workspace.firewall_rule
 
   name = coalesce(
-    each.value.name,
-    try(join("-", [var.naming.synapse_firewall_rule, each.key]), null),
-    each.key
+    each.value.name, each.key
   )
 
-  synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
+  synapse_workspace_id = azurerm_synapse_workspace.this.id
   start_ip_address     = each.value.start_ip_address
   end_ip_address       = each.value.end_ip_address
 }
 
 # sql pools
-resource "azurerm_synapse_sql_pool" "synapse_sql_pool" {
+resource "azurerm_synapse_sql_pool" "this" {
   for_each = var.workspace.sql_pools
 
   name = coalesce(
-    each.value.name,
-    try(join("-", [var.naming.synapse_sql_pool, each.key]), null),
-    each.key
-  )
+  each.value.name, each.key)
 
-  synapse_workspace_id      = azurerm_synapse_workspace.synapse_workspace.id
+  synapse_workspace_id      = azurerm_synapse_workspace.this.id
   sku_name                  = each.value.sku_name
   create_mode               = each.value.create_mode
   collation                 = each.value.collation
@@ -122,31 +170,29 @@ resource "azurerm_synapse_sql_pool" "synapse_sql_pool" {
   geo_backup_policy_enabled = each.value.geo_backup_policy_enabled
   storage_account_type      = each.value.storage_account_type
 
+  tags = coalesce(
+    var.workspace.tags, var.tags
+  )
+
   dynamic "restore" {
-    for_each = each.value.restore != null ? { default = each.value.restore } : {}
+    for_each = each.value.restore != null ? { "this" = each.value.restore } : {}
 
     content {
       source_database_id = restore.value.source_database_id
       point_in_time      = restore.value.point_in_time
     }
   }
-
-  tags = coalesce(
-    var.workspace.tags, var.tags
-  )
 }
 
 # spark pools
-resource "azurerm_synapse_spark_pool" "synapse_spark_pool" {
+resource "azurerm_synapse_spark_pool" "this" {
   for_each = var.workspace.spark_pools
 
   name = coalesce(
-    each.value.name,
-    try(join("", [var.naming.synapse_spark_pool, each.key]), null),
-    each.key
+    each.value.name, each.key
   )
 
-  synapse_workspace_id                = azurerm_synapse_workspace.synapse_workspace.id
+  synapse_workspace_id                = azurerm_synapse_workspace.this.id
   node_size_family                    = each.value.node_size_family
   node_size                           = each.value.node_size
   node_count                          = each.value.node_count
@@ -160,8 +206,12 @@ resource "azurerm_synapse_spark_pool" "synapse_spark_pool" {
   spark_events_folder                 = each.value.spark_events_folder
   spark_version                       = each.value.spark_version
 
+  tags = coalesce(
+    var.workspace.tags, var.tags
+  )
+
   dynamic "auto_scale" {
-    for_each = each.value.auto_scale != null ? { default = each.value.auto_scale } : {}
+    for_each = each.value.auto_scale != null ? { "this" = each.value.auto_scale } : {}
 
     content {
       min_node_count = auto_scale.value.min_node_count
@@ -170,7 +220,7 @@ resource "azurerm_synapse_spark_pool" "synapse_spark_pool" {
   }
 
   dynamic "auto_pause" {
-    for_each = each.value.auto_pause != null ? { default = each.value.auto_pause } : {}
+    for_each = each.value.auto_pause != null ? { "this" = each.value.auto_pause } : {}
 
     content {
       delay_in_minutes = auto_pause.value.delay_in_minutes
@@ -178,7 +228,7 @@ resource "azurerm_synapse_spark_pool" "synapse_spark_pool" {
   }
 
   dynamic "library_requirement" {
-    for_each = each.value.library_requirement != null ? { default = each.value.library_requirement } : {}
+    for_each = each.value.library_requirement != null ? { "this" = each.value.library_requirement } : {}
 
     content {
       content  = library_requirement.value.content
@@ -187,101 +237,93 @@ resource "azurerm_synapse_spark_pool" "synapse_spark_pool" {
   }
 
   dynamic "spark_config" {
-    for_each = each.value.spark_config != null ? { default = each.value.spark_config } : {}
+    for_each = each.value.spark_config != null ? { "this" = each.value.spark_config } : {}
 
     content {
       content  = spark_config.value.content
       filename = spark_config.value.filename
     }
   }
-
-  tags = coalesce(
-    var.workspace.tags, var.tags
-  )
 }
 
-# role assignment
-resource "azurerm_synapse_role_assignment" "synapse_role_assignment" {
+# role assignments
+resource "azurerm_synapse_role_assignment" "this" {
   for_each = var.workspace.role_assignment
 
-  synapse_workspace_id  = each.value.synapse_spark_pool_id == null ? azurerm_synapse_workspace.synapse_workspace.id : null
+  synapse_workspace_id  = each.value.synapse_spark_pool_id == null ? azurerm_synapse_workspace.this.id : null
   synapse_spark_pool_id = each.value.synapse_spark_pool_id
   role_name             = each.value.role_name
   principal_id          = each.value.principal_id
   principal_type        = each.value.principal_type
 
+  # managed via the workspace dev endpoint (data plane), not ARM — needs the
+  # private endpoint up first when public_network_access_enabled is false
   depends_on = [
-    azurerm_synapse_firewall_rule.synapse_firewall_rule,
+    azurerm_synapse_firewall_rule.this,
+    azurerm_private_endpoint.this,
   ]
 }
 
-# endpoint
-resource "azurerm_synapse_managed_private_endpoint" "synapse_managed_private_endpoint" {
+# managed private endpoints
+resource "azurerm_synapse_managed_private_endpoint" "this" {
   for_each = var.workspace.managed_private_endpoint
 
   name = coalesce(
-    each.value.name,
-    try(join("-", [var.naming.synapse_managed_private_endpoint, each.key]), null),
-    each.key
+    each.value.name, each.key
   )
 
-  synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
-  target_resource_id   = each.value.target_resource_id
-  subresource_name     = each.value.subresource_name
+  synapse_workspace_id         = azurerm_synapse_workspace.this.id
+  target_resource_id           = each.value.target_resource_id
+  subresource_name             = each.value.subresource_name
+  fully_qualified_domain_names = each.value.fully_qualified_domain_names
 
+  # managed via the workspace dev endpoint (data plane), not ARM — needs the
+  # private endpoint up first when public_network_access_enabled is false
   depends_on = [
-    azurerm_synapse_firewall_rule.synapse_firewall_rule,
+    azurerm_synapse_firewall_rule.this,
+    azurerm_private_endpoint.this,
   ]
 }
 
 # integration runtime self hosted
-resource "azurerm_synapse_integration_runtime_self_hosted" "synapse_irsh" {
+resource "azurerm_synapse_integration_runtime_self_hosted" "this" {
   for_each = var.workspace.integration_runtime_self_hosted
 
-  name = coalesce(
-    each.value.name,
-    try(join("-", [var.naming.synapse_integration_runtime_self_hosted, each.key]), null),
-    each.key
-  )
-
-  synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
+  name                 = coalesce(each.value.name, each.key)
+  synapse_workspace_id = azurerm_synapse_workspace.this.id
   description          = each.value.description
 }
 
 # integration runtime azure
-resource "azurerm_synapse_integration_runtime_azure" "synapse_ira" {
+resource "azurerm_synapse_integration_runtime_azure" "this" {
   for_each = var.workspace.integration_runtime_azure
 
   name = coalesce(
-    each.value.name,
-    try(join("-", [var.naming.synapse_integration_runtime_azure, each.key]), null),
-    each.key
+    each.value.name, each.key
   )
 
   location = coalesce(
     each.value.location,
-    lookup(var.workspace, "location", null),
+    var.workspace.location,
     var.location
   )
 
-  synapse_workspace_id = azurerm_synapse_workspace.synapse_workspace.id
+  synapse_workspace_id = azurerm_synapse_workspace.this.id
   compute_type         = each.value.compute_type
   core_count           = each.value.core_count
   description          = each.value.description
   time_to_live_min     = each.value.time_to_live_min
 }
 
-# linked service
-resource "azurerm_synapse_linked_service" "synapse_linked_service" {
+# linked services
+resource "azurerm_synapse_linked_service" "this" {
   for_each = var.workspace.linked_service
 
   name = coalesce(
-    each.value.name,
-    try(join("-", [var.naming.synapse_linked_service, each.key]), null),
-    each.key
+    each.value.name, each.key
   )
 
-  synapse_workspace_id  = azurerm_synapse_workspace.synapse_workspace.id
+  synapse_workspace_id  = azurerm_synapse_workspace.this.id
   type                  = each.value.type
   type_properties_json  = each.value.type_properties_json
   additional_properties = each.value.additional_properties
@@ -290,7 +332,7 @@ resource "azurerm_synapse_linked_service" "synapse_linked_service" {
   parameters            = each.value.parameters
 
   dynamic "integration_runtime" {
-    for_each = each.value.integration_runtime != null ? { default = each.value.integration_runtime } : {}
+    for_each = each.value.integration_runtime != null ? { "this" = each.value.integration_runtime } : {}
 
     content {
       name       = integration_runtime.value.name
@@ -298,19 +340,22 @@ resource "azurerm_synapse_linked_service" "synapse_linked_service" {
     }
   }
 
+  # managed via the workspace dev endpoint (data plane), not ARM — needs the
+  # private endpoint up first when public_network_access_enabled is false
   depends_on = [
-    azurerm_synapse_firewall_rule.synapse_firewall_rule,
-    azurerm_synapse_integration_runtime_azure.synapse_ira,
-    azurerm_synapse_integration_runtime_self_hosted.synapse_irsh
+    azurerm_synapse_firewall_rule.this,
+    azurerm_synapse_integration_runtime_azure.this,
+    azurerm_synapse_integration_runtime_self_hosted.this,
+    azurerm_private_endpoint.this,
   ]
 }
 
 # workspace key
-resource "azurerm_synapse_workspace_key" "workspace_key" {
-  for_each = var.workspace.customer_managed_key != null ? { default = var.workspace.customer_managed_key } : {}
+resource "azurerm_synapse_workspace_key" "this" {
+  for_each = var.workspace.customer_managed_key != null ? { "this" = var.workspace.customer_managed_key } : {}
 
   customer_managed_key_versionless_id = each.value.key_versionless_id
-  synapse_workspace_id                = azurerm_synapse_workspace.synapse_workspace.id
+  synapse_workspace_id                = azurerm_synapse_workspace.this.id
   active                              = true
   customer_managed_key_name           = each.value.key_name
 }

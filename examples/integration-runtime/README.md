@@ -1,1 +1,1 @@
-This example highlights configuring both Azure and self-hosted integration runtimes for Synapse.
+This deploys synapse integration runtimes and a linked service
