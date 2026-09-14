@@ -315,11 +315,7 @@ To update the module's documentation run `make doc`
 
 We welcome contributions from the community! Whether it's reporting a bug, suggesting a new feature, or submitting a pull request, your input is highly valued.
 
-For more information, please see our contribution [guidelines](./CONTRIBUTING.md). <br><br>
-
-<a href="https://github.com/cloudnationhq/terraform-azure-syn/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=cloudnationhq/terraform-azure-syn" />
-</a>
+For more information, please see our contribution [guidelines](./CONTRIBUTING.md).
 
 ## License
 
@@ -329,4 +325,3 @@ MIT Licensed. See [LICENSE](https://github.com/cloudnationhq/terraform-azure-syn
 
 - [Documentation](https://learn.microsoft.com/en-us/azure/synapse-analytics/)
 - [Rest Api](https://learn.microsoft.com/en-us/rest/api/synapse/)
-- [Rest Api Specs](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/synapse)
