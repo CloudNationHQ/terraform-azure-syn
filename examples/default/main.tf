@@ -7,40 +7,37 @@ module "naming" {
 
 module "rg" {
   source  = "cloudnationhq/rg/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   groups = {
     syn = {
       name     = module.naming.resource_group.name_unique
-      location = "northeurope"
+      location = "germanywestcentral"
     }
   }
 }
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 4.0"
-
-  naming = local.naming
+  version = "~> 5.0"
 
   storage = {
     name                = module.naming.storage_account.name_unique
     location            = module.rg.groups.syn.location
     resource_group_name = module.rg.groups.syn.name
-    threat_protection   = true
     is_hns_enabled      = true
 
     file_systems = {
-      adls-gen2 = {}
+      adls-gen2 = {
+        name = module.naming.storage_data_lake_gen2_filesystem.name
+      }
     }
   }
 }
 
 module "kv" {
   source  = "cloudnationhq/kv/azure"
-  version = "~> 4.0"
-
-  naming = local.naming
+  version = "~> 6.0"
 
   vault = {
     name                = module.naming.key_vault.name_unique
@@ -62,9 +59,7 @@ module "kv" {
 
 module "synapse" {
   source  = "cloudnationhq/syn/azure"
-  version = "~> 2.0"
-
-  naming = local.naming
+  version = "~> 3.0"
 
   workspace = {
     name                                 = module.naming.synapse_workspace.name_unique
