@@ -2,11 +2,16 @@ data "azurerm_client_config" "this" {}
 
 # workspace
 resource "azurerm_synapse_workspace" "this" {
-  name                = var.workspace.name
-  resource_group_name = coalesce(var.workspace.resource_group_name, var.resource_group_name)
-  location            = coalesce(var.workspace.location, var.location)
-  tags                = coalesce(var.workspace.tags, var.tags)
+  resource_group_name = coalesce(
+    var.workspace.resource_group_name, var.resource_group_name
+  )
 
+  location = coalesce(
+    var.workspace.location, var.location
+  )
+
+
+  name                                 = var.workspace.name
   storage_data_lake_gen2_filesystem_id = var.workspace.storage_data_lake_gen2_filesystem_id
   sql_administrator_login              = var.workspace.sql_administrator_login
   sql_administrator_login_password     = var.workspace.sql_administrator_login_password
@@ -19,6 +24,10 @@ resource "azurerm_synapse_workspace" "this" {
   public_network_access_enabled        = var.workspace.public_network_access_enabled
   purview_id                           = var.workspace.purview_id
   sql_identity_control_enabled         = var.workspace.sql_identity_control_enabled
+
+  tags = coalesce(
+    var.workspace.tags, var.tags
+  )
 
   dynamic "azure_devops_repo" {
     for_each = var.workspace.azure_devops_repo != null ? { "this" = var.workspace.azure_devops_repo } : {}
@@ -71,15 +80,30 @@ resource "azurerm_synapse_workspace" "this" {
 resource "azurerm_private_endpoint" "this" {
   for_each = var.workspace.private_endpoints != null ? var.workspace.private_endpoints : {}
 
-  name                          = coalesce(each.value.name, each.key)
-  resource_group_name           = coalesce(var.workspace.resource_group_name, var.resource_group_name)
-  location                      = coalesce(var.workspace.location, var.location)
+  name = coalesce(
+    each.value.name, each.key
+  )
+
+  resource_group_name = coalesce(
+    var.workspace.resource_group_name, var.resource_group_name
+  )
+
+  location = coalesce(
+    var.workspace.location, var.location
+  )
+
   subnet_id                     = each.value.subnet_resource_id
   custom_network_interface_name = each.value.custom_network_interface_name
-  tags                          = coalesce(each.value.tags, var.tags)
+
+  tags = coalesce(
+    each.value.tags, var.tags
+  )
 
   private_service_connection {
-    name                           = coalesce(each.value.private_service_connection_name, "${each.key}-connection")
+    name = coalesce(
+      each.value.private_service_connection_name, each.key
+    )
+
     is_manual_connection           = each.value.is_manual_connection
     private_connection_resource_id = azurerm_synapse_workspace.this.id
     subresource_names              = each.value.subresource_name != null ? [each.value.subresource_name] : []
@@ -121,7 +145,10 @@ resource "azurerm_synapse_workspace_aad_admin" "this" {
 resource "azurerm_synapse_firewall_rule" "this" {
   for_each = var.workspace.firewall_rule
 
-  name                 = coalesce(each.value.name, each.key)
+  name = coalesce(
+    each.value.name, each.key
+  )
+
   synapse_workspace_id = azurerm_synapse_workspace.this.id
   start_ip_address     = each.value.start_ip_address
   end_ip_address       = each.value.end_ip_address
@@ -131,7 +158,9 @@ resource "azurerm_synapse_firewall_rule" "this" {
 resource "azurerm_synapse_sql_pool" "this" {
   for_each = var.workspace.sql_pools
 
-  name                      = coalesce(each.value.name, each.key)
+  name = coalesce(
+  each.value.name, each.key)
+
   synapse_workspace_id      = azurerm_synapse_workspace.this.id
   sku_name                  = each.value.sku_name
   create_mode               = each.value.create_mode
@@ -140,7 +169,10 @@ resource "azurerm_synapse_sql_pool" "this" {
   recovery_database_id      = each.value.recovery_database_id
   geo_backup_policy_enabled = each.value.geo_backup_policy_enabled
   storage_account_type      = each.value.storage_account_type
-  tags                      = coalesce(var.workspace.tags, var.tags)
+
+  tags = coalesce(
+    var.workspace.tags, var.tags
+  )
 
   dynamic "restore" {
     for_each = each.value.restore != null ? { "this" = each.value.restore } : {}
@@ -156,7 +188,10 @@ resource "azurerm_synapse_sql_pool" "this" {
 resource "azurerm_synapse_spark_pool" "this" {
   for_each = var.workspace.spark_pools
 
-  name                                = coalesce(each.value.name, each.key)
+  name = coalesce(
+    each.value.name, each.key
+  )
+
   synapse_workspace_id                = azurerm_synapse_workspace.this.id
   node_size_family                    = each.value.node_size_family
   node_size                           = each.value.node_size
@@ -170,7 +205,10 @@ resource "azurerm_synapse_spark_pool" "this" {
   spark_log_folder                    = each.value.spark_log_folder
   spark_events_folder                 = each.value.spark_events_folder
   spark_version                       = each.value.spark_version
-  tags                                = coalesce(var.workspace.tags, var.tags)
+
+  tags = coalesce(
+    var.workspace.tags, var.tags
+  )
 
   dynamic "auto_scale" {
     for_each = each.value.auto_scale != null ? { "this" = each.value.auto_scale } : {}
@@ -230,7 +268,10 @@ resource "azurerm_synapse_role_assignment" "this" {
 resource "azurerm_synapse_managed_private_endpoint" "this" {
   for_each = var.workspace.managed_private_endpoint
 
-  name                         = coalesce(each.value.name, each.key)
+  name = coalesce(
+    each.value.name, each.key
+  )
+
   synapse_workspace_id         = azurerm_synapse_workspace.this.id
   target_resource_id           = each.value.target_resource_id
   subresource_name             = each.value.subresource_name
@@ -257,7 +298,9 @@ resource "azurerm_synapse_integration_runtime_self_hosted" "this" {
 resource "azurerm_synapse_integration_runtime_azure" "this" {
   for_each = var.workspace.integration_runtime_azure
 
-  name = coalesce(each.value.name, each.key)
+  name = coalesce(
+    each.value.name, each.key
+  )
 
   location = coalesce(
     each.value.location,
@@ -276,7 +319,10 @@ resource "azurerm_synapse_integration_runtime_azure" "this" {
 resource "azurerm_synapse_linked_service" "this" {
   for_each = var.workspace.linked_service
 
-  name                  = coalesce(each.value.name, each.key)
+  name = coalesce(
+    each.value.name, each.key
+  )
+
   synapse_workspace_id  = azurerm_synapse_workspace.this.id
   type                  = each.value.type
   type_properties_json  = each.value.type_properties_json
