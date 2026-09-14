@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.0.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v2.2.0...v3.0.0) (2026-09-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* azurerm v5 upgrade and module standards ([#61](https://github.com/CloudNationHQ/terraform-azure-syn/issues/61))
+
+### Features
+
+* azurerm v5 upgrade and module standards ([#61](https://github.com/CloudNationHQ/terraform-azure-syn/issues/61)) ([5ebd907](https://github.com/CloudNationHQ/terraform-azure-syn/commit/5ebd9077b9be12a0f0633b6e78f3d30e960df071))
+* **deps:** bump github.com/cloudnationhq/az-cn-go-validor in /tests ([#53](https://github.com/CloudNationHQ/terraform-azure-syn/issues/53)) ([d5bb66b](https://github.com/CloudNationHQ/terraform-azure-syn/commit/d5bb66bd11d560a8aea654e2fb546b70512b9ad6))
+* **deps:** bump golang.org/x/crypto from 0.45.0 to 0.52.0 in /tests ([#59](https://github.com/CloudNationHQ/terraform-azure-syn/issues/59)) ([f9309dc](https://github.com/CloudNationHQ/terraform-azure-syn/commit/f9309dc54449242d70821341e9936cff49538350))
+
 ## [2.2.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v2.1.0...v2.2.0) (2026-04-03)
 
 
