@@ -7,27 +7,24 @@ module "naming" {
 
 module "rg" {
   source  = "cloudnationhq/rg/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   groups = {
     syn = {
       name     = module.naming.resource_group.name_unique
-      location = "northeurope"
+      location = "germanywestcentral"
     }
   }
 }
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 4.0"
-
-  naming = local.naming
+  version = "~> 5.0"
 
   storage = {
     name                = module.naming.storage_account.name_unique
     location            = module.rg.groups.syn.location
     resource_group_name = module.rg.groups.syn.name
-    threat_protection   = true
     is_hns_enabled      = true
 
     file_systems = {
@@ -40,9 +37,7 @@ module "storage" {
 
 module "kv" {
   source  = "cloudnationhq/kv/azure"
-  version = "~> 4.0"
-
-  naming = local.naming
+  version = "~> 6.0"
 
   vault = {
     name                = module.naming.key_vault.name_unique
@@ -64,9 +59,7 @@ module "kv" {
 
 module "synapse" {
   source  = "cloudnationhq/syn/azure"
-  version = "~> 2.0"
-
-  naming = local.naming
+  version = "~> 3.0"
 
   workspace = {
     name                                 = module.naming.synapse_workspace.name_unique
@@ -80,6 +73,16 @@ module "synapse" {
       type = "SystemAssigned"
     }
 
+    # linked services are created via the workspace dev endpoint (data plane),
+    # so the client running terraform must be allowed through the firewall
+    firewall_rule = {
+      allow_all = {
+        name             = "AllowAll"
+        start_ip_address = "0.0.0.0"
+        end_ip_address   = "255.255.255.255"
+      }
+    }
+
     integration_runtime_azure = {
       ira1 = {
         name = module.naming.synapse_integration_runtime_azure.name
@@ -89,6 +92,21 @@ module "synapse" {
     integration_runtime_self_hosted = {
       irs1 = {
         name = module.naming.synapse_integration_runtime_self_hosted.name
+      }
+    }
+
+    linked_service = {
+      blob = {
+        type = "AzureBlobStorage"
+        type_properties_json = jsonencode({
+          connectionString = module.storage.account.primary_connection_string
+        })
+        annotations = ["demo"]
+        description = "linked service to the workspace storage account"
+
+        integration_runtime = {
+          name = module.naming.synapse_integration_runtime_azure.name
+        }
       }
     }
   }

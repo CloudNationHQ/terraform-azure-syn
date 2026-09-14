@@ -57,6 +57,17 @@ module "kv" {
   }
 }
 
+module "uai" {
+  source  = "cloudnationhq/uai/azure"
+  version = "~> 3.0"
+
+  identity = {
+    name                = module.naming.user_assigned_identity.name
+    location            = module.rg.groups.syn.location
+    resource_group_name = module.rg.groups.syn.name
+  }
+}
+
 module "synapse" {
   source  = "cloudnationhq/syn/azure"
   version = "~> 3.0"
@@ -73,6 +84,31 @@ module "synapse" {
       type = "SystemAssigned"
     }
 
-    sql_pools = local.pools
+    aad_admin = {
+      login = "aad-admin"
+    }
+
+    firewall_rule = {
+      azure_services = {
+        name             = "AllowAllWindowsAzureIps"
+        start_ip_address = "0.0.0.0"
+        end_ip_address   = "0.0.0.0"
+      }
+      # synapse rbac is managed via the workspace dev endpoint (data plane),
+      # so the client running terraform must be allowed through the firewall
+      allow_all = {
+        name             = "AllowAll"
+        start_ip_address = "0.0.0.0"
+        end_ip_address   = "255.255.255.255"
+      }
+    }
+
+    role_assignment = {
+      contributor = {
+        role_name      = "Synapse Contributor"
+        principal_id   = module.uai.identity.principal_id
+        principal_type = "ServicePrincipal"
+      }
+    }
   }
 }
