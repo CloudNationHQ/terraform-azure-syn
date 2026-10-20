@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.1.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v3.0.0...v3.1.0) (2026-10-20)
+
+
+### Features
+
+* **deps:** bump github.com/klauspost/compress in /tests ([#62](https://github.com/CloudNationHQ/terraform-azure-syn/issues/62)) ([95e9f5b](https://github.com/CloudNationHQ/terraform-azure-syn/commit/95e9f5befaac0f9ddc77f6b9a8959a074ae9a0af))
+* **deps:** bump github.com/klauspost/compress in /tests ([#63](https://github.com/CloudNationHQ/terraform-azure-syn/issues/63)) ([97c3ee0](https://github.com/CloudNationHQ/terraform-azure-syn/commit/97c3ee0a16b06b0c2a54ef24f2a8613d83d49d9a))
+
 ## [3.0.0](https://github.com/CloudNationHQ/terraform-azure-syn/compare/v2.2.0...v3.0.0) (2026-09-14)
 
 
