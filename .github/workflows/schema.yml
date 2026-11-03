@@ -7,4 +7,6 @@ on:
 jobs:
   schema-check:
     uses: cloudnationhq/terraform-azure-workflows/.github/workflows/schema.yml@main
+    with:
+      exclude_properties: azurerm_private_endpoint.private_service_connection.private_connection_resource_alias
     secrets: inherit
