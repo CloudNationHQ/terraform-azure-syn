@@ -54,6 +54,7 @@ variable "workspace" {
       subresource_name                = optional(string)
       private_dns_zone_resource_ids   = optional(list(string))
       custom_network_interface_name   = optional(string)
+      ip_version_type                 = optional(string)
       edge_zone                       = optional(string)
       tags                            = optional(map(string))
       private_service_connection_name = optional(string)
